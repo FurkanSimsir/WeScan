@@ -3,22 +3,16 @@
 import PackageDescription
 
 let package = Package(
-    name: "WeScan",
-    defaultLocalization: "en",
-    platforms: [
-      .iOS(.v17),
-      .visionOS(.v1)
-    ],
-    products: [
-        .library(name: "WeScan", targets: ["WeScan"])
-    ],
-    dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.10.0")
-    ],
-    targets: [
-        .target(name: "WeScan",
-                resources: [
-                    .process("Resources")
-                ])
-    ]
+  name: "WeScan",
+  defaultLocalization: "en",
+  platforms: [
+    .iOS(.v17),
+    .visionOS(.v1)
+  ],
+  products: [
+    .library(name: "WeScan", targets: ["WeScan"])
+  ],
+  targets: [
+    .target(name: "WeScan", resources: [.process("Resources")])
+  ]
 )
