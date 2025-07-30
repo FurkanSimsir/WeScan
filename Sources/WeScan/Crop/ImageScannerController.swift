@@ -61,15 +61,11 @@ public final class ImageScannerController: UINavigationController {
     }
 
     public required init(image: UIImage? = nil, delegate: ImageScannerControllerDelegate? = nil) {
-        super.init(rootViewController: ScannerViewController())
+        super.init(rootViewController: .init())
 
         self.imageScannerDelegate = delegate
 
-        if #available(iOS 13.0, *) {
-            navigationBar.tintColor = .label
-        } else {
-            navigationBar.tintColor = .black
-        }
+        navigationBar.tintColor = .label
         navigationBar.isTranslucent = false
         self.view.addSubview(blackFlashView)
         setupConstraints()
@@ -101,31 +97,10 @@ public final class ImageScannerController: UINavigationController {
         let orientation = CGImagePropertyOrientation(image.imageOrientation)
         let orientedImage = ciImage.oriented(forExifOrientation: Int32(orientation.rawValue))
 
-        if #available(iOS 11.0, *) {
-            // Use the VisionRectangleDetector on iOS 11 to attempt to find a rectangle from the initial image.
-            VisionRectangleDetector.rectangle(forImage: ciImage, orientation: orientation) { quad in
-                let detectedQuad = quad?.toCartesian(withHeight: orientedImage.extent.height)
-                completion(detectedQuad)
-            }
-        } else {
-            // Use the CIRectangleDetector on iOS 10 to attempt to find a rectangle from the initial image.
-            let detectedQuad = CIRectangleDetector.rectangle(forImage: ciImage)?.toCartesian(withHeight: orientedImage.extent.height)
+        VisionRectangleDetector.rectangle(forImage: ciImage, orientation: orientation) { quad in
+            let detectedQuad = quad?.toCartesian(withHeight: orientedImage.extent.height)
             completion(detectedQuad)
         }
-    }
-
-    public func useImage(image: UIImage) {
-        guard topViewController is ScannerViewController else { return }
-
-        detect(image: image) { [weak self] detectedQuad in
-            guard let self else { return }
-            let editViewController = EditScanViewController(image: image, quad: detectedQuad, rotateImage: false)
-            self.setViewControllers([editViewController], animated: true)
-        }
-    }
-
-    public func resetScanner() {
-        setViewControllers([ScannerViewController()], animated: true)
     }
 
     private func setupConstraints() {

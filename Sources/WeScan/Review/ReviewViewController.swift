@@ -28,19 +28,14 @@ final class ReviewViewController: UIViewController {
     }()
 
     private lazy var enhanceButton: UIBarButtonItem = {
-        let image = UIImage(
-            systemName: "wand.and.rays.inverse",
-            named: "enhance",
-            in: Bundle(for: ScannerViewController.self),
-            compatibleWith: nil
-        )
+        let image = UIImage(systemName: "wand.and.rays.inverse", compatibleWith: nil)
         let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(toggleEnhancedImage))
         button.tintColor = .white
         return button
     }()
 
     private lazy var rotateButton: UIBarButtonItem = {
-        let image = UIImage(systemName: "rotate.right", named: "rotate", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
+        let image = UIImage(systemName: "rotate.right", compatibleWith: nil)
         let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(rotateImage))
         button.tintColor = .white
         return button
@@ -106,7 +101,11 @@ final class ReviewViewController: UIViewController {
     private func setupToolbar() {
         guard enhancedImageIsAvailable else { return }
 
+      #if os(visionOS)
+        navigationController?.toolbar.barStyle = .black
+      #else
         navigationController?.toolbar.barStyle = .blackTranslucent
+      #endif
 
         let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
@@ -117,21 +116,12 @@ final class ReviewViewController: UIViewController {
         imageView.translatesAutoresizingMaskIntoConstraints = false
 
         var imageViewConstraints: [NSLayoutConstraint] = []
-        if #available(iOS 11.0, *) {
-            imageViewConstraints = [
-                view.safeAreaLayoutGuide.topAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.topAnchor),
-                view.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.trailingAnchor),
-                view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.bottomAnchor),
-                view.safeAreaLayoutGuide.leadingAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.leadingAnchor)
-            ]
-        } else {
-            imageViewConstraints = [
-                view.topAnchor.constraint(equalTo: imageView.topAnchor),
-                view.trailingAnchor.constraint(equalTo: imageView.trailingAnchor),
-                view.bottomAnchor.constraint(equalTo: imageView.bottomAnchor),
-                view.leadingAnchor.constraint(equalTo: imageView.leadingAnchor)
-            ]
-        }
+        imageViewConstraints = [
+            view.safeAreaLayoutGuide.topAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.topAnchor),
+            view.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.trailingAnchor),
+            view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.bottomAnchor),
+            view.safeAreaLayoutGuide.leadingAnchor.constraint(equalTo: imageView.safeAreaLayoutGuide.leadingAnchor)
+        ]
 
         NSLayoutConstraint.activate(imageViewConstraints)
     }
